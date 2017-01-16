@@ -27,10 +27,10 @@
     <div>
         {{# each itemValues }}
             <article class="itemValue">
-                <br><div>Title: {{this.title}} </div>
+                <br><div><a href="/data/{{this._id}}">Title:</a> {{this.title}} </div>
                 <div>Content: {{this.content}} </div>
                 <div>Author: {{this.author}} </div>
-                <a href="/comments?id={{this._id}}">Comment</a>
+                <a href="/comments/{{this._id}}">Comment</a>
                 <form action="/data/:{{this._id}}/delete" method="post">
                     <button id="deleteBtn" name="deleteBtn" value={{this._id}}>Delete</button
                 </form><br>

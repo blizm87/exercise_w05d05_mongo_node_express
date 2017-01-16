@@ -34,37 +34,36 @@ router.post('/insert', function(req, res, next) {
 
 /* READ Data */
 router.get('/data', function(req, resp, next){
-  var result = [];
-  mongo.connect(url, function(err, db){
-    assert.equal(null, err);
-    var dbOutput = db.collection('data').find();
-    dbOutput.forEach(function(ind, err){
-      assert.equal(null, err);
-      result.push(ind);
-    }, function(){
-      db.close();
-      resp.render('index', {itemValues: result, title: 'MongoDB - Basics'});
-    })
-  })
-})
+      var result = [];
+      mongo.connect(url, function(err, db){
+        assert.equal(null, err);
+        var dbOutput = db.collection('data').find();
+        dbOutput.forEach(function(ind, err){
+          assert.equal(null, err);
+          result.push(ind);
+        }, function(){
+          db.close();
+          resp.render('index', {itemValues: result, title: 'MongoDB - Basics'});
+        });
+      });
+});
+
+router.get('/data/:id', function(req, resp, next){
+    var result = [];
+      mongo.connect(url, function(err, db){
+        assert.equal(null, err);
+        var dbOutput = db.collection('data').find({"_id": objectId(req.params.id)});
+        dbOutput.forEach(function(ind, err){
+          assert.equal(null, err);
+          result.push(ind);
+        }, function(){
+          db.close();
+          resp.render('data', {itemSelect: result, title: 'MongoDB - Data Entry'});
+        });
+      });
+});
 
 router.get('/comments', function(req, resp, next){
-  if(req.query.id !== undefined){
-    console.log('I am the IF:' + req.query.id);
-    var result = [];
-    mongo.connect(url, function(err, db){
-      assert.equal(null, err);
-      var dbOutput = db.collection('data').find({"_id": objectId(req.query.id)});
-      dbOutput.forEach(function(ind, err){
-        assert.equal(null, err);
-        result.push(ind);
-      }, function(){
-        db.close();
-        resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
-      })
-    })
-  } else {
-      console.log('I am the ELSE');
       var result = [];
       mongo.connect(url, function(err, db){
         assert.equal(null, err);
@@ -75,10 +74,24 @@ router.get('/comments', function(req, resp, next){
         }, function(){
           db.close();
           resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
-        })
-      })
-    }
-})
+        });
+      });
+});
+
+router.get('/comments/:id', function(req, resp, next){
+    var result = [];
+    mongo.connect(url, function(err, db){
+      assert.equal(null, err);
+      var dbOutput = db.collection('data').find({"_id": objectId(req.params.id)});
+      dbOutput.forEach(function(ind, err){
+        assert.equal(null, err);
+        result.push(ind);
+      }, function(){
+        db.close();
+        resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
+      });
+    });
+});
 
 /* UPDATE Data */
 router.post('/comments/:addComBtn', function(req, resp, next){
@@ -89,8 +102,8 @@ router.post('/comments/:addComBtn', function(req, resp, next){
     db.collection('data').update({"_id": objectId(req.body.addComBtn)}, {$set: {comment: result}});
     db.close();
     resp.redirect('/comments?id=' + req.body.addComBtn );
-    })
-})
+    });
+});
 
 /* DELETE Data */
 router.post('/data/:deleteBtn/delete', function(req, resp, next){
@@ -99,7 +112,7 @@ router.post('/data/:deleteBtn/delete', function(req, resp, next){
     db.collection('data').remove({"_id": objectId(req.body.deleteBtn)});
     db.close();
     resp.redirect('/data');
-  })
-})
+  });
+});
 
 module.exports = router;

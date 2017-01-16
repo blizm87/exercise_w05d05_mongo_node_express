@@ -3,16 +3,12 @@
 <h1>{{title}}</h1>
 
     {{#each itemSelect }}
-        <section class="comments">
-            <h3>
-                <br><div><a href="/data/{{this._id}}">Title:</a> {{this.title}} </div>
+        <section class="retData">
+            <h3>Retrieved Data</h3>
+                <br><div>Title: {{this.title}} </div>
                 <div>Content: {{this.content}} </div>
                 <div>Author: {{this.author}} </div>
-            </h3>
-                <form action="/comments/:{{this._id}}" method="post">
-                    <input type="text" id="newComment" name="newComment">
-                    <button id="addComBtn" name="addComBtn" value={{this._id}}>Add Comment</button>
-                </form><br>
+                <a href="/comments/{{this._id}}">Comment</a><br><br><br>
             <article>Comments: <br>
                 <div><ul>
                     {{#each this.comment }}
