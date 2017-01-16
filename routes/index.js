@@ -24,7 +24,7 @@ router.post('/insert', function(req, res, next) {
     assert.equal(null, err);
     db.collection('data').insertOne(item, function(err, result) {
       assert.equal(null, err);
-      console.log('Item inserted');
+      console.log('Item inserted: ' + result);
       db.close();
     });
   });
@@ -33,7 +33,58 @@ router.post('/insert', function(req, res, next) {
 });
 
 /* READ Data */
+router.get('/data', function(req, resp, next){
+  var result = [];
+  mongo.connect(url, function(err, db){
+    assert.equal(null, err);
+    var dbOutput = db.collection('data').find();
+    dbOutput.forEach(function(ind, err){
+      assert.equal(null, err);
+      result.push(ind);
+    }, function(){
+      db.close();
+      resp.render('index', {itemValues: result, title: 'MongoDB - Basics'});
+    })
+  })
+})
+
+router.get('/comments', function(req, resp, next){
+  var result = [];
+  var comResult;
+  mongo.connect(url, function(err, db){
+    assert.equal(null, err);
+    var dbOutput = db.collection('data').find({"_id": objectId(req.query.id)});
+    dbOutput.forEach(function(ind, err){
+      assert.equal(null, err);
+      result.push(ind);
+    }, function(){
+      db.close();
+      console.log(comResult);
+      resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
+    })
+  })
+})
+
 /* UPDATE Data */
+router.post('/comments/:addComBtn', function(req, resp, next){
+  var result = [];
+  result.push(req.body.newComment);
+  mongo.connect(url, function(err, db){
+    assert.equal(null, err);
+    db.collection('data').update({"_id": objectId(req.body.addComBtn)}, {$set: {comment: result}});
+    db.close();
+    resp.redirect('/comments?id=' + req.body.addComBtn );
+    })
+})
+
 /* DELETE Data */
+router.post('/data/:deleteBtn/delete', function(req, resp, next){
+  mongo.connect(url, function(err, db){
+    assert.equal(null, err);
+    db.collection('data').remove({"_id": objectId(req.body.deleteBtn)});
+    db.close();
+    resp.redirect('/data');
+  })
+})
 
 module.exports = router;
