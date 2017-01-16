@@ -49,20 +49,35 @@ router.get('/data', function(req, resp, next){
 })
 
 router.get('/comments', function(req, resp, next){
-  var result = [];
-  var comResult;
-  mongo.connect(url, function(err, db){
-    assert.equal(null, err);
-    var dbOutput = db.collection('data').find({"_id": objectId(req.query.id)});
-    dbOutput.forEach(function(ind, err){
+  if(req.query.id !== undefined){
+    console.log('I am the IF:' + req.query.id);
+    var result = [];
+    mongo.connect(url, function(err, db){
       assert.equal(null, err);
-      result.push(ind);
-    }, function(){
-      db.close();
-      console.log(comResult);
-      resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
+      var dbOutput = db.collection('data').find({"_id": objectId(req.query.id)});
+      dbOutput.forEach(function(ind, err){
+        assert.equal(null, err);
+        result.push(ind);
+      }, function(){
+        db.close();
+        resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
+      })
     })
-  })
+  } else {
+      console.log('I am the ELSE');
+      var result = [];
+      mongo.connect(url, function(err, db){
+        assert.equal(null, err);
+        var dbOutput = db.collection('data').find();
+        dbOutput.forEach(function(ind, err){
+          assert.equal(null, err);
+          result.push(ind);
+        }, function(){
+          db.close();
+          resp.render('comments', {itemSelect: result, title: 'MongoDB - Comments'});
+        })
+      })
+    }
 })
 
 /* UPDATE Data */
